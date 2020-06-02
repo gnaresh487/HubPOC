@@ -1,0 +1,2 @@
+rootProject.name='HubPOC'
+include ':app'
