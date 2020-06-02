@@ -22,7 +22,8 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class BaseActivity extends AppCompatActivity {
 
-    public static final int CALL_LOGS = 52;
+    public static final int CALL_LOG = 100;
+    public static final int PHONE_STATE = 101;
     private ProgressDialog mProgressDialog;
 
     public boolean checkCallLogsPermission() {
@@ -48,7 +49,7 @@ public class BaseActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(
                     this,
                     new String[]{permission},
-                    CALL_LOGS);
+                    CALL_LOG);
         }
         return isGranted;
     }
@@ -62,14 +63,16 @@ public class BaseActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 
+/*
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
-            case CALL_LOGS:
+            case CALL_LOG:
                 isPermissionGranted(grantResults[0] == PackageManager.PERMISSION_GRANTED, permissions[0]);
                 break;
         }
     }
+*/
 
     protected void showLoading(@NonNull String message) {
         mProgressDialog = new ProgressDialog(this);

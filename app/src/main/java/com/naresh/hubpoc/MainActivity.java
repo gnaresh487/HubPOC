@@ -1,5 +1,6 @@
 package com.naresh.hubpoc;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -32,13 +33,14 @@ public class MainActivity extends BaseActivity {
     CallLogsAdapter callLogsAdapter;
     ArrayList<CallLogsModel> callLogsList;
     String sim1, sim2;
+    String[] projection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         callListRv = findViewById(R.id.call_list_rv);
-        String[] projection = new String[]{
+        projection = new String[]{
                 CallLog.Calls._ID,
                 CallLog.Calls.NUMBER,
                 CallLog.Calls.DATE,
@@ -59,9 +61,7 @@ public class MainActivity extends BaseActivity {
         callListRv.setAdapter(callLogsAdapter);
         if(checkReadPhoneStatePermission()){
             TelephonyManager telephony = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-
             Log.d(TAG, "onCreate: telephony "+telephony.getLine1Number());
-
         } else {
             requestPhoneStatePermission();
         }
@@ -71,7 +71,16 @@ public class MainActivity extends BaseActivity {
             getSimSlotNumber();
             getCallLogs(projection);
         } else {
-            requestReadContactsPermission();
+            requestReadCallLogsPermission();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == CALL_LOG && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            getSimSlotNumber();
+            getCallLogs(projection);
         }
     }
 
@@ -109,7 +118,7 @@ public class MainActivity extends BaseActivity {
 
                 /*Log.d(TAG, "getCallLogs: simNumber sim1 "+ sim1);
                 Log.d(TAG, "getCallLogs: simNumber sim2 "+ sim2);*/
-                Log.d(TAG, "getCallLogs: simNumber simNumber "+ simNumber+ " callerNumber "+callerNumber);
+                Log.d(TAG, "getCallLogs: simNumber "+ simNumber+ " callerNumber "+callerNumber);
             /*    if(simNumber == (sim1)){
                     Log.d(TAG, "getCallLogs: sim 1");
                 } else if(simNumber == (sim2)){
@@ -146,31 +155,14 @@ public class MainActivity extends BaseActivity {
 
     private void requestPhoneStatePermission() {
         ActivityCompat.requestPermissions(this, new
-                String[]{READ_PHONE_STATE}, CALL_LOGS);
+                String[]{READ_PHONE_STATE}, PHONE_STATE);
     }
 
-    private void requestReadContactsPermission() {
+    private void requestReadCallLogsPermission() {
         ActivityCompat.requestPermissions(this, new
-                String[]{READ_CALL_LOG}, CALL_LOGS);
+                String[]{READ_CALL_LOG}, CALL_LOG);
     }
 
-    private void check(){
-        TelephonyInfo telephonyInfo = TelephonyInfo.getInstance(this);
-
-        String imeiSIM1 = telephonyInfo.getImsiSIM1();
-        String imeiSIM2 = telephonyInfo.getImsiSIM2();
-
-        boolean isSIM1Ready = telephonyInfo.isSIM1Ready();
-        boolean isSIM2Ready = telephonyInfo.isSIM2Ready();
-
-        boolean isDualSIM = telephonyInfo.isDualSIM();
-
-        Log.d(TAG, "check: IME1 : " + imeiSIM1 + "\n" +
-        " IME2 : " + imeiSIM2 + "\n" +
-                " IS DUAL SIM : " + isDualSIM + "\n" +
-                " IS SIM1 READY : " + isSIM1Ready + "\n" +
-                " IS SIM2 READY : " + isSIM2Ready + "\n");
-    }
     private void getSimSlotNumber() {
 
         if (Build.VERSION.SDK_INT > 22) {
@@ -194,17 +186,33 @@ public class MainActivity extends BaseActivity {
                 TelephonyManager tManager = (TelephonyManager) getBaseContext()
                         .getSystemService(Context.TELEPHONY_SERVICE);
 
-                String sim1 = tManager.getNetworkOperatorName();
-
+                sim1 = tManager.getNetworkOperatorName();
             }
-
         }else{
             //below android version 22
             TelephonyManager tManager = (TelephonyManager) getBaseContext()
                     .getSystemService(Context.TELEPHONY_SERVICE);
 
-            String sim1 = tManager.getNetworkOperatorName();
+            sim1 = tManager.getNetworkOperatorName();
         }
+    }
+
+    private void check(){
+        TelephonyInfo telephonyInfo = TelephonyInfo.getInstance(this);
+
+        String imeiSIM1 = telephonyInfo.getImsiSIM1();
+        String imeiSIM2 = telephonyInfo.getImsiSIM2();
+
+        boolean isSIM1Ready = telephonyInfo.isSIM1Ready();
+        boolean isSIM2Ready = telephonyInfo.isSIM2Ready();
+
+        boolean isDualSIM = telephonyInfo.isDualSIM();
+
+        Log.d(TAG, "check: IME1 : " + imeiSIM1 + "\n" +
+                " IME2 : " + imeiSIM2 + "\n" +
+                " IS DUAL SIM : " + isDualSIM + "\n" +
+                " IS SIM1 READY : " + isSIM1Ready + "\n" +
+                " IS SIM2 READY : " + isSIM2Ready + "\n");
     }
 
 }
