@@ -2,27 +2,34 @@ package com.naresh.hubpoc;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.CallLog;
+import android.provider.Settings;
+import android.telecom.TelecomManager;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import static android.Manifest.permission.READ_CALL_LOG;
 import static android.Manifest.permission.READ_PHONE_STATE;
+import static android.telecom.TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME;
 
 public class MainActivity extends BaseActivity {
 
@@ -31,7 +38,7 @@ public class MainActivity extends BaseActivity {
     CallLogsAdapter callLogsAdapter;
     ArrayList<CallLogsModel> callLogsList;
     String sim1PhoneNumber, sim2PhoneNumber;
-    String sim1IccID, sim2IccID;
+    String sim1IccID="", sim2IccID="";
     String[] projection;
 
     @Override
@@ -77,6 +84,35 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.defaultApp:
+                offerReplacingDefaultDialer();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+}
+
+    private void offerReplacingDefaultDialer() {
+        TelecomManager telecomManager = (TelecomManager) getSystemService(TELECOM_SERVICE);
+
+        /*if (!getPackageName().equals(telecomManager.getDefaultDialerPackage())) {
+
+        }*/
+
+        Intent intent = new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS)
+                .putExtra(EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, getPackageName());
+        startActivity(intent);
+    }
+    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == PHONE_STATE && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -121,12 +157,13 @@ public class MainActivity extends BaseActivity {
                 } else if (callType == CallLog.Calls.MISSED_TYPE) {
                     //missed call
                 }*/
+                Log.d(TAG, "getCallLogs:  "+ simSubId+","+sim1PhoneNumber);
 
                 int simSlot;
-                if(simSubId.equals(sim1IccID)){
+                if(simSubId.contains(sim1IccID)){
                     simSlot = 1;
                     Log.d(TAG, "getCallLogs: sim1 "+ sim1PhoneNumber);
-                } else if(simSubId.equals(sim2IccID)){
+                } else if(simSubId.contains(sim2IccID)){
                     simSlot = 2;
                     Log.d(TAG, "getCallLogs: sim2 "+ sim2PhoneNumber);
                 } else {
@@ -165,9 +202,9 @@ public class MainActivity extends BaseActivity {
     }
 
     private void getSimSlotNumber() {
-
+        Log.d("getSimSlotNumber","getSimSlotNumber");
         if (Build.VERSION.SDK_INT > 22) {
-
+            Log.d("getSimSlotNumber","getSimSlotNumber1");
             //for dual sim mobile
             SubscriptionManager localSubscriptionManager = SubscriptionManager.from(this);
 
@@ -175,6 +212,7 @@ public class MainActivity extends BaseActivity {
                 return;
             }
             if (localSubscriptionManager.getActiveSubscriptionInfoCount() > 1) {
+                Log.d("getSimSlotNumber","getSimSlotNumber2");
                 //if there are two sims in dual sim mobile
                 List localList = localSubscriptionManager.getActiveSubscriptionInfoList();
                 SubscriptionInfo simInfo1 = (SubscriptionInfo) localList.get(0);
@@ -201,8 +239,18 @@ public class MainActivity extends BaseActivity {
                         .getSystemService(Context.TELEPHONY_SERVICE);
 
                 sim1PhoneNumber = tManager.getNetworkOperatorName();
+                if(localSubscriptionManager.getActiveSubscriptionInfoCount()>0){
+                    Log.d("getSimSlotNumber","getSimSlotNumber3:"+localSubscriptionManager.getActiveSubscriptionInfoCount());
+                    List localList = localSubscriptionManager.getActiveSubscriptionInfoList();
+                    SubscriptionInfo simInfo1 = (SubscriptionInfo) localList.get(0);
+                    sim1PhoneNumber = String.valueOf(simInfo1.getNumber());
+                    sim1IccID = simInfo1.getIccId();
+                    Log.d(TAG, "getSimSlotNumber: iccid1 "+simInfo1.getIccId()+","+simInfo1.getNumber()+"....");
+                    Log.d(TAG, "getSimSlotNumber: Simslot1 "+String.valueOf(simInfo1.getSimSlotIndex()));
+                }
             }
         }else{
+            Log.d("getSimSlotNumber","getSimSlotNumber4");
             //below android version 22
             TelephonyManager tManager = (TelephonyManager) getBaseContext()
                     .getSystemService(Context.TELEPHONY_SERVICE);
