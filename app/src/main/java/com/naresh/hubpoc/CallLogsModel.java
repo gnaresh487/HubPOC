@@ -9,6 +9,15 @@ class CallLogsModel {
     private long callDateAndTime;
     private long callDuration;
     private int callType;
+    private int simSlot;
+
+    public int getSimSlot() {
+        return simSlot;
+    }
+
+    public void setSimSlot(int simSlot) {
+        this.simSlot = simSlot;
+    }
 
     public int getCallType() {
         return callType;

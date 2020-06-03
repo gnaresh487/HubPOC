@@ -11,6 +11,8 @@ public final class TelephonyInfo {
     private static TelephonyInfo telephonyInfo;
     private String imeiSIM1;
     private String imeiSIM2;
+    private String subscriptionId1;
+    private String subscriptionId2;
     private boolean isSIM1Ready;
     private boolean isSIM2Ready;
 
@@ -18,36 +20,36 @@ public final class TelephonyInfo {
         return imeiSIM1;
     }
 
-    /*public static void setImsiSIM1(String imeiSIM1) {
-        TelephonyInfo.imeiSIM1 = imeiSIM1;
-    }*/
-
     public String getImsiSIM2() {
         return imeiSIM2;
     }
-
-    /*public static void setImsiSIM2(String imeiSIM2) {
-        TelephonyInfo.imeiSIM2 = imeiSIM2;
-    }*/
 
     public boolean isSIM1Ready() {
         return isSIM1Ready;
     }
 
-    /*public static void setSIM1Ready(boolean isSIM1Ready) {
-        TelephonyInfo.isSIM1Ready = isSIM1Ready;
-    }*/
-
     public boolean isSIM2Ready() {
         return isSIM2Ready;
     }
 
-    /*public static void setSIM2Ready(boolean isSIM2Ready) {
-        TelephonyInfo.isSIM2Ready = isSIM2Ready;
-    }*/
-
     public boolean isDualSIM() {
         return imeiSIM2 != null;
+    }
+
+    public String getSubscriptionId1() {
+        return subscriptionId1;
+    }
+
+    public void setSubscriptionId1(String subscriptionId1) {
+        this.subscriptionId1 = subscriptionId1;
+    }
+
+    public String getSubscriptionId2() {
+        return subscriptionId2;
+    }
+
+    public void setSubscriptionId2(String subscriptionId2) {
+        this.subscriptionId2 = subscriptionId2;
     }
 
     private TelephonyInfo() {

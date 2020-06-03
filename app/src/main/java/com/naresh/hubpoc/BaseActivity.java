@@ -24,6 +24,9 @@ public class BaseActivity extends AppCompatActivity {
 
     public static final int CALL_LOG = 100;
     public static final int PHONE_STATE = 101;
+    public static final int INCOMING_CALL = 1;
+    public static final int OUTGOING_CALL = 2;
+    public static final int MISSED_CALL = 3;
     private ProgressDialog mProgressDialog;
 
     public boolean checkCallLogsPermission() {

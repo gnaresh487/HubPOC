@@ -6,8 +6,8 @@
 
     <ImageView
         android:id="@+id/img_call_type"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -21,14 +21,30 @@
         app:layout_constraintLeft_toRightOf="@+id/img_call_type"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/caller_phone_number"/>
+
+    <TextView
+        android:id="@+id/sim_slot_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ic_sim_card"
+        android:paddingStart="@dimen/sim_slot_left"
+        android:paddingEnd="@dimen/item_margin"
+        android:paddingTop="@dimen/item_margin"
+        android:paddingBottom="@dimen/item_margin"
+        app:layout_constraintLeft_toRightOf="@+id/img_call_type"
+        app:layout_constraintRight_toLeftOf="@+id/caller_phone_number"
+        app:layout_constraintTop_toBottomOf="@+id/caller_name"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
     <TextView
         android:id="@+id/caller_phone_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="@dimen/item_margin"
-        app:layout_constraintLeft_toRightOf="@+id/img_call_type"
+        app:layout_constraintLeft_toRightOf="@+id/sim_slot_number"
         app:layout_constraintTop_toBottomOf="@+id/caller_name"
         app:layout_constraintBottom_toBottomOf="parent"/>
+    
     <TextView
         android:id="@+id/call_time"
         android:layout_width="wrap_content"
@@ -41,8 +57,10 @@
         android:id="@+id/call_details"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:src="@drawable/ic_info_black_24dp"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:padding="@dimen/padding"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
