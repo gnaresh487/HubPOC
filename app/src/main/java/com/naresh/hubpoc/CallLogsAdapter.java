@@ -14,10 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static com.naresh.hubpoc.BaseActivity.INCOMING_CALL;
-import static com.naresh.hubpoc.BaseActivity.MISSED_CALL;
 import static com.naresh.hubpoc.BaseActivity.OUTGOING_CALL;
 
 public class CallLogsAdapter extends RecyclerView.Adapter<CallLogsAdapter.ViewHolder> {

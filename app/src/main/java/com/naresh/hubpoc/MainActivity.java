@@ -18,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,9 +28,15 @@ import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
 import static android.Manifest.permission.READ_CALL_LOG;
 import static android.Manifest.permission.READ_PHONE_STATE;
 import static android.telecom.TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME;
+import static android.Manifest.permission.RECORD_AUDIO;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class MainActivity extends BaseActivity {
 
@@ -38,7 +45,7 @@ public class MainActivity extends BaseActivity {
     CallLogsAdapter callLogsAdapter;
     ArrayList<CallLogsModel> callLogsList;
     String sim1PhoneNumber, sim2PhoneNumber;
-    String sim1IccID="", sim2IccID="";
+    String sim1IccID, sim2IccID;
     String[] projection;
 
     @Override
@@ -65,6 +72,18 @@ public class MainActivity extends BaseActivity {
         callLogsAdapter = new CallLogsAdapter(this);
         callListRv.setLayoutManager(new LinearLayoutManager(this));
         callListRv.setAdapter(callLogsAdapter);
+
+        if(checkRecordCallPermission()){
+
+        } else {
+            requestRecordPermission();
+        }
+        if(checkStoragePermission()){
+
+        } else {
+            requestStoragePermission();
+        }
+
         if(checkReadPhoneStatePermission()){
             getSimSlotNumber();
             /*TelephonyManager telephony = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
@@ -140,6 +159,7 @@ public class MainActivity extends BaseActivity {
                 String simSubId = c.getString(c.getColumnIndexOrThrow(CallLog.Calls.PHONE_ACCOUNT_ID));
                 long callDateAndTime = c.getLong(c.getColumnIndex(CallLog.Calls.DATE));
                 Date callDate = new Date(callDateAndTime);
+                String timeStamp = new SimpleDateFormat("HH:mm").format(callDate);
                 long time = callDate.getHours();
                 long callDuration = c.getLong(c.getColumnIndex(CallLog.Calls.DURATION));
                 int callType = c.getInt(c.getColumnIndex(CallLog.Calls.TYPE));
@@ -194,6 +214,16 @@ public class MainActivity extends BaseActivity {
     private void requestPhoneStatePermission() {
         ActivityCompat.requestPermissions(this, new
                 String[]{READ_PHONE_STATE}, PHONE_STATE);
+    }
+
+    private void requestRecordPermission() {
+        ActivityCompat.requestPermissions(this, new
+                String[]{RECORD_AUDIO}, RECORD_CALL);
+    }
+
+    private void requestStoragePermission() {
+        ActivityCompat.requestPermissions(this, new
+                String[]{WRITE_EXTERNAL_STORAGE}, STORAGE);
     }
 
     private void requestReadCallLogsPermission() {

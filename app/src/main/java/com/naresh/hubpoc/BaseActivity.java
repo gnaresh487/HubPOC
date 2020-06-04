@@ -24,6 +24,8 @@ public class BaseActivity extends AppCompatActivity {
 
     public static final int CALL_LOG = 100;
     public static final int PHONE_STATE = 101;
+    public static final int RECORD_CALL = 102;
+    public static final int STORAGE = 103;
     public static final int INCOMING_CALL = 1;
     public static final int OUTGOING_CALL = 2;
     public static final int MISSED_CALL = 3;
@@ -35,6 +37,13 @@ public class BaseActivity extends AppCompatActivity {
 
     public boolean checkReadPhoneStatePermission() {
         return ContextCompat.checkSelfPermission(getApplicationContext(), READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public boolean checkRecordCallPermission() {
+        return ContextCompat.checkSelfPermission(getApplicationContext(), RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED;
+    }
+    public boolean checkStoragePermission() {
+        return ContextCompat.checkSelfPermission(getApplicationContext(), WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
     }
 
     public boolean checkAudioRecordPermission() {
