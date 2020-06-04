@@ -92,11 +92,6 @@ public class ForegroundService extends Service {
     private boolean startMediaRecorder(final int audioSource){
         recorder = new MediaRecorder();
         try{
-            recorder.reset();
-            recorder.setAudioSource(audioSource);
-            recorder.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB);
-            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-
             File dirPath = new File(getExternalFilesDir(null).getAbsolutePath() + "/tempFiles");
             Log.d(TAG, "startMediaRecorder: dirPath "+dirPath);
             if (!dirPath.exists()) {
@@ -104,6 +99,10 @@ public class ForegroundService extends Service {
             }
             String fileName = dirPath.getAbsolutePath() + File.separator + System.currentTimeMillis()+".amr";
 
+            recorder.reset();
+            recorder.setAudioSource(audioSource);
+            recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
             recorder.setOutputFile(fileName);
 
             MediaRecorder.OnErrorListener errorListener = new MediaRecorder.OnErrorListener() {
@@ -138,6 +137,8 @@ public class ForegroundService extends Service {
 
         if (isRecordStarted) {
             recorder.stop();
+            recorder.release();
+            recorder = null;
             isRecordStarted = false;
         }
         stopForeground(true);

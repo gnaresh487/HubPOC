@@ -44,8 +44,8 @@ public class MainActivity extends BaseActivity {
     RecyclerView callListRv;
     CallLogsAdapter callLogsAdapter;
     ArrayList<CallLogsModel> callLogsList;
-    String sim1PhoneNumber, sim2PhoneNumber;
-    String sim1IccID, sim2IccID;
+    String sim1PhoneNumber = "", sim2PhoneNumber = "";
+    String sim1IccID = "", sim2IccID = "";
     String[] projection;
 
     @Override
