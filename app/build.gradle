@@ -5,7 +5,7 @@ android {
     buildToolsVersion "29.0.2"
 
     defaultConfig {
-        applicationId "com.naresh.hubpoc"
+        applicationId "com.telebu.hubpoc"
         minSdkVersion 23
         targetSdkVersion 29
         versionCode 1
