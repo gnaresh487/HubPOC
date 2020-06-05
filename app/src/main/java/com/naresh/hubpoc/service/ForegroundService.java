@@ -1,4 +1,4 @@
-package com.naresh.hubpoc;
+package com.naresh.hubpoc.service;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -13,6 +13,9 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+
+import com.naresh.hubpoc.R;
+import com.naresh.hubpoc.activity.MainActivity;
 
 import java.io.File;
 
@@ -64,6 +67,9 @@ public class ForegroundService extends Service {
         Log.d(TAG, "onDestroy: ");
         stopRecorder();
         super.onDestroy();
+        Intent serviceIntent = new Intent(this, MainActivity.class);
+        serviceIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(serviceIntent);
     }
 
     @Nullable
@@ -93,6 +99,7 @@ public class ForegroundService extends Service {
         recorder = new MediaRecorder();
         try{
             File dirPath = new File(getExternalFilesDir(null).getAbsolutePath() + "/tempFiles");
+
             Log.d(TAG, "startMediaRecorder: dirPath "+dirPath);
             if (!dirPath.exists()) {
                 dirPath.mkdirs();

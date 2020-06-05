@@ -19,14 +19,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
 
         <activity
             android:name=".defaultdialer.DialerActivity"
@@ -62,7 +61,7 @@
         <activity android:name=".defaultdialer.CallActivity" />
 
         <!--This part is inside the application-->
-        <receiver android:name=".CallReceiver" >
+        <receiver android:name=".receiver.CallReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>
@@ -76,7 +75,7 @@
 
         </receiver>-->
 
-        <service android:name=".ForegroundService"/>
+        <service android:name=".service.ForegroundService"/>
 <!--
         <receiver
             android:name=".DeviceAdminDemo"

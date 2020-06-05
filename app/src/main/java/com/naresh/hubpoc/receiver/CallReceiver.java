@@ -1,4 +1,4 @@
-package com.naresh.hubpoc;
+package com.naresh.hubpoc.receiver;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,6 +6,9 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
+
+import com.naresh.hubpoc.activity.MainActivity;
+import com.naresh.hubpoc.service.ForegroundService;
 
 import java.util.Date;
 

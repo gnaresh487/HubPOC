@@ -1,4 +1,4 @@
-package com.naresh.hubpoc;
+package com.naresh.hubpoc.receiver;
 
 import java.util.Date;
 
@@ -6,11 +6,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.telephony.TelephonyManager;
-import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
-import static android.media.session.PlaybackState.ACTION_STOP;
+import com.naresh.hubpoc.service.ForegroundService;
+
 import static androidx.constraintlayout.widget.Constraints.TAG;
 
 public abstract class PhoneCallReceiver extends BroadcastReceiver {

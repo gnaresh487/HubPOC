@@ -15,19 +15,20 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
-import static com.naresh.hubpoc.BaseActivity.INCOMING_CALL;
-import static com.naresh.hubpoc.BaseActivity.OUTGOING_CALL;
+import static com.naresh.hubpoc.activity.BaseActivity.INCOMING_CALL;
+import static com.naresh.hubpoc.activity.BaseActivity.OUTGOING_CALL;
 
 public class CallLogsAdapter extends RecyclerView.Adapter<CallLogsAdapter.ViewHolder> {
 
     private LayoutInflater mInflater;
     private ArrayList<CallLogsModel> callLogsList;
     private Context mContext;
-
+    private OnItemClickListener listener;
     // data is passed into the constructor
-    CallLogsAdapter(Context context) {
+    public CallLogsAdapter(Context context, OnItemClickListener listener) {
         this.mContext = context;
         this.mInflater = LayoutInflater.from(context);
+        this.listener = listener;
     }
 
     // inflates the row layout from xml when needed
@@ -64,17 +65,30 @@ public class CallLogsAdapter extends RecyclerView.Adapter<CallLogsAdapter.ViewHo
         }
 
         holder.simSlot.setText(String.valueOf(logsModel.getSimSlot()));
-        holder.callTime.setText(String.valueOf(logsModel.getCallDateAndTime()));
+        holder.callTime.setText(logsModel.getCallTime());
+
+        holder.callerName.setOnClickListener(v -> {
+            listener.onItemClick(logsModel.getCallerNumber());
+        });
+        holder.callerPhoneNumber.setOnClickListener(v -> {
+            listener.onItemClick(logsModel.getCallerNumber());
+        });
+        holder.simSlot.setOnClickListener(v -> {
+            listener.onItemClick(logsModel.getCallerNumber());
+        });
+        holder.callTime.setOnClickListener(v -> {
+            listener.onItemClick(logsModel.getCallerNumber());
+        });
     }
 
     // total number of rows
     @Override
     public int getItemCount() {
         //return mData.size();
-        return callLogsList.size();
+        return callLogsList != null ? callLogsList.size() : 0;
     }
 
-    void setData(ArrayList<CallLogsModel> callLogsModels){
+    public void setData(ArrayList<CallLogsModel> callLogsModels){
         this.callLogsList = callLogsModels;
         notifyDataSetChanged();
     }

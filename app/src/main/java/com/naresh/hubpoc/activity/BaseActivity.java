@@ -1,4 +1,4 @@
-package com.naresh.hubpoc;
+package com.naresh.hubpoc.activity;
 
 import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
@@ -14,8 +14,8 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.material.snackbar.Snackbar;
 
+import static android.Manifest.permission.CALL_PHONE;
 import static android.Manifest.permission.READ_CALL_LOG;
-import static android.Manifest.permission.READ_CONTACTS;
 import static android.Manifest.permission.READ_PHONE_STATE;
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -26,6 +26,8 @@ public class BaseActivity extends AppCompatActivity {
     public static final int PHONE_STATE = 101;
     public static final int RECORD_CALL = 102;
     public static final int STORAGE = 103;
+    public static final int ALL_PERMISSIONS = 104;
+    public static final int MAKE_CALL = 105;
     public static final int INCOMING_CALL = 1;
     public static final int OUTGOING_CALL = 2;
     public static final int MISSED_CALL = 3;
@@ -37,6 +39,10 @@ public class BaseActivity extends AppCompatActivity {
 
     public boolean checkReadPhoneStatePermission() {
         return ContextCompat.checkSelfPermission(getApplicationContext(), READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    public boolean checkMakeCallPermission() {
+        return ContextCompat.checkSelfPermission(getApplicationContext(), CALL_PHONE) == PackageManager.PERMISSION_GRANTED;
     }
 
     public boolean checkRecordCallPermission() {

@@ -1,12 +1,13 @@
 package com.naresh.hubpoc;
 
-class CallLogsModel {
+public class CallLogsModel {
     private String callerID;
     private String callerName;
     private String callerNumber;
     private String userNumber;
     private String countryCode;
     private long callDateAndTime;
+    private String callTime;
     private long callDuration;
     private int callType;
     private int simSlot;
@@ -81,5 +82,13 @@ class CallLogsModel {
 
     public void setCountryCode(String countryCode) {
         this.countryCode = countryCode;
+    }
+
+    public String getCallTime() {
+        return callTime;
+    }
+
+    public void setCallTime(String callTime) {
+        this.callTime = callTime;
     }
 }
