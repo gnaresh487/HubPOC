@@ -18,6 +18,7 @@ import android.telecom.TelecomManager;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,14 +29,17 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.naresh.hubpoc.CallLogsAdapter;
 import com.naresh.hubpoc.CallLogsModel;
+import com.naresh.hubpoc.GlobalAccessibilityService;
 import com.naresh.hubpoc.R;
 import com.naresh.hubpoc.TelephonyInfo;
 
@@ -49,6 +53,7 @@ import static android.Manifest.permission.READ_CALL_LOG;
 import static android.Manifest.permission.READ_PHONE_STATE;
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static android.Manifest.permission.WRITE_SECURE_SETTINGS;
 import static android.telecom.TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME;
 
 public class MainActivity extends BaseActivity {
@@ -140,6 +145,17 @@ public class MainActivity extends BaseActivity {
         } else {
             requestReadCallLogsPermission();
         }*/
+        /*if(checkWriteAccessibilityPermission()) {
+            Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
+            Settings.Secure.putString(getContentResolver(),
+                    Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, "com.naresh.hubpoc/GlobalAccessibilityService");
+            Settings.Secure.putString(getContentResolver(),
+                    Settings.Secure.ACCESSIBILITY_ENABLED, "1");
+            startActivityForResult(intent, ACCESSIBILITY_PERMISSION);
+        } else {
+            requestWriteAccessibilityPermissions();
+        }*/
+
     }
 
     @Override
@@ -173,16 +189,19 @@ public class MainActivity extends BaseActivity {
     }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case ALL_PERMISSIONS:
-                if (grantResults.length > 0) {
-                    if(grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED
-                    && grantResults[2] == PackageManager.PERMISSION_GRANTED && grantResults[3] == PackageManager.PERMISSION_GRANTED){
+        if (grantResults.length > 0) {
+            switch (requestCode) {
+
+                case ALL_PERMISSIONS:
+
+                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED
+                            && grantResults[2] == PackageManager.PERMISSION_GRANTED && grantResults[3] == PackageManager.PERMISSION_GRANTED) {
                         getSimSlotNumber();
                         //getCallLogs(projection);
                     } else {
                         finish();
                     }
+                    break;
 /*
                     if(grantResults[1] == PackageManager.PERMISSION_GRANTED){
                         getCallLogs(projection);
@@ -201,9 +220,21 @@ public class MainActivity extends BaseActivity {
                     } else {
                         requestStoragePermission();
                     }*/
-                }
-                break;
-            /*case PHONE_STATE:
+
+                case WRITE_ACCESSIBILITY_PERMISSION:
+
+                    if (permissions[0].equals(WRITE_SECURE_SETTINGS) && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
+                        Settings.Secure.putString(getContentResolver(),
+                                Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, "com.naresh.hubpoc/GlobalAccessibilityService");
+                        Settings.Secure.putString(getContentResolver(),
+                                Settings.Secure.ACCESSIBILITY_ENABLED, "1");
+                        //startActivityForResult(intent, ACCESSIBILITY_PERMISSION);
+                    } else {
+                        // Permission Denied
+                    }
+                    break;
+                /*case PHONE_STATE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // Permission Granted
                     getSimSlotNumber();
@@ -219,17 +250,40 @@ public class MainActivity extends BaseActivity {
                     // Permission Denied
                 }
                 break;*/
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+                default:
+                    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode){
+            case ACCESSIBILITY_PERMISSION:
+                if(!(isAccessibilitySettingsOn(this))){
+                    finish();
+                }
+
+                break;
         }
     }
 
     public void getCallLogs(String[] projection) {
-        //Fetches the complete call log in descending order. i.e recent calls appears first.
+
+        //Enable Accessibility Service
+        if(!(isAccessibilitySettingsOn(this))){
+            Toast.makeText(this, "Enable Accessibility Service for "+getString(R.string.app_name), Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
+            startActivityForResult(intent, ACCESSIBILITY_PERMISSION);
+        }
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
             return;
         }
+
+        //Fetches the complete call log in descending order. i.e recent calls appears first.
         Cursor c = getApplicationContext().getContentResolver().query(CallLog.Calls.CONTENT_URI, projection, null,
                 null, CallLog.Calls.DATE + " DESC");
 
@@ -322,6 +376,11 @@ public class MainActivity extends BaseActivity {
     private void requestMakeCallPermissions() {
         ActivityCompat.requestPermissions(this, new
                 String[]{CALL_PHONE}, MAKE_CALL);
+    }
+
+    private void requestWriteAccessibilityPermissions() {
+        ActivityCompat.requestPermissions(this, new
+                String[]{WRITE_SECURE_SETTINGS}, WRITE_ACCESSIBILITY_PERMISSION);
     }
 
     private void requestReadCallLogsPermission() {
@@ -476,6 +535,42 @@ public class MainActivity extends BaseActivity {
         });
 
         dialog.show();
+    }
+
+    private boolean isAccessibilitySettingsOn(Context mContext) {
+        int accessibilityEnabled = 0;
+        final String service = getPackageName() + "/" + GlobalAccessibilityService.class.getCanonicalName();
+        try {
+            accessibilityEnabled = Settings.Secure.getInt(
+                    mContext.getApplicationContext().getContentResolver(),
+                    android.provider.Settings.Secure.ACCESSIBILITY_ENABLED);
+        } catch (Settings.SettingNotFoundException e) {
+            Log.e(TAG, "Error finding setting, default accessibility to not found: "
+                    + e.getMessage());
+        }
+        TextUtils.SimpleStringSplitter mStringColonSplitter = new TextUtils.SimpleStringSplitter(':');
+
+        if (accessibilityEnabled == 1) {
+            String settingValue = Settings.Secure.getString(
+                    mContext.getApplicationContext().getContentResolver(),
+                    Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
+            if (settingValue != null) {
+                mStringColonSplitter.setString(settingValue);
+                while (mStringColonSplitter.hasNext()) {
+                    String accessibilityService = mStringColonSplitter.next();
+
+                    Log.v(TAG, "-------------- > accessibilityService :: " + accessibilityService + " " + service);
+                    if (accessibilityService.equalsIgnoreCase(service)) {
+                        Log.v(TAG, "We've found the correct setting - accessibility is switched on!");
+                        return true;
+                    }
+                }
+            }
+        } else {
+            Log.v(TAG, "***ACCESSIBILITY IS DISABLED***");
+        }
+
+        return false;
     }
 
 }
