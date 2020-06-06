@@ -380,6 +380,12 @@ public class MainActivity extends BaseActivity {
                     simIccID = simInfo1.getIccId();
                     Log.d(TAG, "getSimSlotNumber: iccid1 "+simInfo1.getIccId()+","+simInfo1.getNumber()+"....");
                     Log.d(TAG, "getSimSlotNumber: Simslot1 "+String.valueOf(simInfo1.getSimSlotIndex()));
+
+                    SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
+                    editor.putString(SIM_SLOT_ID, simIccID);
+                    editor.apply();
+                    getCallLogs(projection);
+
                 }
             }
 
