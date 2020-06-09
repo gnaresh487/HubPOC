@@ -1,3 +1,4 @@
+/*
 package com.naresh.hubpoc.receiver;
 
 import android.content.Context;
@@ -22,13 +23,15 @@ public class CallReceiver extends PhoneCallReceiver {
         Log.d(TAG, "onIncomingCallStarted: ");
     }
 
+*/
 /*
     @Override
     protected void onIncomingCallReceived(Context ctx, String number, Date start)
     {
         //
     }
-*/
+*//*
+
 
     @Override
     protected void onIncomingCallAnswered(Context ctx, String number, Date start)
@@ -70,4 +73,4 @@ public class CallReceiver extends PhoneCallReceiver {
         ContextCompat.startForegroundService(context, serviceIntent);
     }
 
-}
+}*/

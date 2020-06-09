@@ -1,3 +1,4 @@
+/*
 package com.naresh.hubpoc.receiver;
 
 import java.util.Date;
@@ -26,9 +27,11 @@ public abstract class PhoneCallReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        /*if (!TextUtils.isEmpty(intent.getAction()) && intent.getAction().equals("ACTION_STOP")) {
+        */
+/*if (!TextUtils.isEmpty(intent.getAction()) && intent.getAction().equals("ACTION_STOP")) {
             context.stopService(new Intent(context, ForegroundService.class));
-        }*/
+        }*//*
+
         //We listen to two intents.  The new outgoing call only tells us of an outgoing call.  We use it to get the number.
         if (intent.getAction().equals("android.intent.action.NEW_OUTGOING_CALL")) {
             savedNumber = intent.getExtras().getString("android.intent.extra.PHONE_NUMBER");
@@ -111,4 +114,4 @@ public abstract class PhoneCallReceiver extends BroadcastReceiver {
         }
         lastState = state;
     }
-}
+}*/

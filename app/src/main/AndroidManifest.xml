@@ -4,21 +4,21 @@
     package="com.naresh.hubpoc">
 
     <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.READ_CONTACTS"/>
-    <uses-permission android:name="android.permission.READ_CALL_LOG"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS"/>
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.STORAGE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
-    <uses-permission android:name="android.permission.WRITE_SETTINGS"
+    <uses-permission
+        android:name="android.permission.WRITE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS"
+    <uses-permission
+        android:name="android.permission.WRITE_SECURE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
-
-
 
     <application
         android:allowBackup="true"
@@ -27,6 +27,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -68,22 +69,21 @@
 
         <activity android:name=".defaultdialer.CallActivity" />
 
-        <!--This part is inside the application-->
-        <receiver android:name=".receiver.CallReceiver" >
-            <intent-filter>
-                <action android:name="android.intent.action.PHONE_STATE" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
-            </intent-filter>
-        </receiver>
+        <!--    <receiver android:name=".receiver.CallReceiver" >
+           <intent-filter>
+               <action android:name="android.intent.action.PHONE_STATE" />
+           </intent-filter>
+           <intent-filter>
+               <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
+           </intent-filter>
+       </receiver>-->
 
-        <service android:name=".service.ForegroundService"/>
+        <service android:name=".service.ForegroundService" />
 
+        //android:exported="true"
         <service
-            android:name=".GlobalAccessibilityService"
+            android:name="com.naresh.hubpoc.GlobalAccessibilityService"
             android:enabled="true"
-            android:exported="true"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter>
@@ -94,24 +94,29 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/serviceconfig" />
         </service>
-<!--
-        <receiver
-            android:name=".DeviceAdminDemo"
-            android:permission="android.permission.BIND_DEVICE_ADMIN" >
-            <meta-data
-                android:name="android.app.device_admin"
-                android:resource="@xml/my_admin" />
+
+        <!--
+                android:directBootAware="true"
+        -->
+
+        <!--
+                <receiver
+                    android:name=".DeviceAdminDemo"
+                    android:permission="android.permission.BIND_DEVICE_ADMIN" >
+                    <meta-data
+                        android:name="android.app.device_admin"
+                        android:resource="@xml/my_admin" />
 
 
-            <intent-filter>
-                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
-                <action android:name="android.app.action.DEVICE_ADMIN_DISABLED" />
-                <action android:name="android.app.action.DEVICE_ADMIN_DISABLE_REQUESTED" />
-            </intent-filter>
-        </receiver>
+                    <intent-filter>
+                        <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+                        <action android:name="android.app.action.DEVICE_ADMIN_DISABLED" />
+                        <action android:name="android.app.action.DEVICE_ADMIN_DISABLE_REQUESTED" />
+                    </intent-filter>
+                </receiver>
 
-        <service android:name=".TService" >
-        </service>-->
+                <service android:name=".TService" >
+                </service>-->
 
     </application>
 

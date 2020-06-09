@@ -68,6 +68,7 @@ public class ForegroundService extends Service {
         stopRecorder();
         super.onDestroy();
         Intent serviceIntent = new Intent(this, MainActivity.class);
+        //serviceIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         serviceIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(serviceIntent);
     }

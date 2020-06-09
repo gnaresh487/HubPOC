@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">HubPOC</string>
+
+    <string name="accessibility_service_desc">This app requires this permission to access call logs and record call audio</string>
 </resources>

@@ -145,16 +145,26 @@ public class MainActivity extends BaseActivity {
         } else {
             requestReadCallLogsPermission();
         }*/
-        /*if(checkWriteAccessibilityPermission()) {
-            Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
-            Settings.Secure.putString(getContentResolver(),
-                    Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES, "com.naresh.hubpoc/GlobalAccessibilityService");
-            Settings.Secure.putString(getContentResolver(),
-                    Settings.Secure.ACCESSIBILITY_ENABLED, "1");
-            startActivityForResult(intent, ACCESSIBILITY_PERMISSION);
+
+        //Enable Accessibility Service
+
+        if(!(isAccessibilitySettingsOn())){
+            Toast.makeText(this, "Enable Accessibility Service for "+getString(R.string.app_name), Toast.LENGTH_LONG).show();
+            /*Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+            startActivityForResult(intent, ACCESSIBILITY_PERMISSION);*/
+            Intent goToSettings = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
+           // goToSettings.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
+            startActivityForResult(goToSettings, ACCESSIBILITY_PERMISSION);
         } else {
-            requestWriteAccessibilityPermissions();
-        }*/
+            Log.d(TAG, "onCreate: isAccessibilitySettingsOn 2 ");
+            /*Intent i = new Intent(this, GlobalAccessibilityService.class);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(i);
+            } else {
+                startService(i);
+            }*/
+            Log.d(TAG, "onCreate: isAccessibilitySettingsOn 3 ");
+        }
 
     }
 
@@ -220,7 +230,7 @@ public class MainActivity extends BaseActivity {
                     } else {
                         requestStoragePermission();
                     }*/
-
+/*
                 case WRITE_ACCESSIBILITY_PERMISSION:
 
                     if (permissions[0].equals(WRITE_SECURE_SETTINGS) && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -233,7 +243,7 @@ public class MainActivity extends BaseActivity {
                     } else {
                         // Permission Denied
                     }
-                    break;
+                    break;*/
                 /*case PHONE_STATE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // Permission Granted
@@ -262,7 +272,7 @@ public class MainActivity extends BaseActivity {
 
         switch (requestCode){
             case ACCESSIBILITY_PERMISSION:
-                if(!(isAccessibilitySettingsOn(this))){
+                if(!(isAccessibilitySettingsOn())){
                     finish();
                 }
 
@@ -272,12 +282,15 @@ public class MainActivity extends BaseActivity {
 
     public void getCallLogs(String[] projection) {
 
-        //Enable Accessibility Service
+        /*//Enable Accessibility Service
         if(!(isAccessibilitySettingsOn(this))){
             Toast.makeText(this, "Enable Accessibility Service for "+getString(R.string.app_name), Toast.LENGTH_LONG).show();
             Intent intent = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
             startActivityForResult(intent, ACCESSIBILITY_PERMISSION);
-        }
+        } else {
+            Intent i = new Intent(this, GlobalAccessibilityService.class);
+            startService(i);
+        }*/
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG) != PackageManager.PERMISSION_GRANTED) {
             return;
@@ -537,12 +550,12 @@ public class MainActivity extends BaseActivity {
         dialog.show();
     }
 
-    private boolean isAccessibilitySettingsOn(Context mContext) {
+    private boolean isAccessibilitySettingsOn() {
+        Log.d(TAG, "isAccessibilitySettingsOn: 1");
         int accessibilityEnabled = 0;
         final String service = getPackageName() + "/" + GlobalAccessibilityService.class.getCanonicalName();
         try {
-            accessibilityEnabled = Settings.Secure.getInt(
-                    mContext.getApplicationContext().getContentResolver(),
+            accessibilityEnabled = Settings.Secure.getInt(getApplicationContext().getContentResolver(),
                     android.provider.Settings.Secure.ACCESSIBILITY_ENABLED);
         } catch (Settings.SettingNotFoundException e) {
             Log.e(TAG, "Error finding setting, default accessibility to not found: "
@@ -551,8 +564,7 @@ public class MainActivity extends BaseActivity {
         TextUtils.SimpleStringSplitter mStringColonSplitter = new TextUtils.SimpleStringSplitter(':');
 
         if (accessibilityEnabled == 1) {
-            String settingValue = Settings.Secure.getString(
-                    mContext.getApplicationContext().getContentResolver(),
+            String settingValue = Settings.Secure.getString(getApplicationContext().getContentResolver(),
                     Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES);
             if (settingValue != null) {
                 mStringColonSplitter.setString(settingValue);
