@@ -1,4 +1,3 @@
-/*
 package com.naresh.hubpoc.receiver;
 
 import java.util.Date;
@@ -7,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -27,10 +27,9 @@ public abstract class PhoneCallReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
 
-        */
-/*if (!TextUtils.isEmpty(intent.getAction()) && intent.getAction().equals("ACTION_STOP")) {
+if (!TextUtils.isEmpty(intent.getAction()) && intent.getAction().equals("ACTION_STOP")) {
             context.stopService(new Intent(context, ForegroundService.class));
-        }*//*
+        }
 
         //We listen to two intents.  The new outgoing call only tells us of an outgoing call.  We use it to get the number.
         if (intent.getAction().equals("android.intent.action.NEW_OUTGOING_CALL")) {
@@ -114,4 +113,4 @@ public abstract class PhoneCallReceiver extends BroadcastReceiver {
         }
         lastState = state;
     }
-}*/
+}

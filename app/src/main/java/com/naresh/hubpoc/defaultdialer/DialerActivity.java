@@ -41,8 +41,6 @@ public class DialerActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
-
         phoneNumberInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -58,8 +56,6 @@ public class DialerActivity extends AppCompatActivity {
             startActivity(new Intent(Intent.ACTION_CALL, uri));
         }
     }
-
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

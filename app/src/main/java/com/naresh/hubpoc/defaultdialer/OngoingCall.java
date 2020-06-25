@@ -3,9 +3,8 @@ package com.naresh.hubpoc.defaultdialer;
 import android.telecom.Call;
 import android.telecom.VideoProfile;
 
-
-
 import androidx.annotation.Nullable;
+
 import io.reactivex.subjects.BehaviorSubject;
 
 public class OngoingCall {
@@ -13,7 +12,7 @@ public class OngoingCall {
     public static BehaviorSubject<Integer> state = BehaviorSubject.create();
     private static Call call;
 
-    private Object callback = new Call.Callback() {
+    private Object callback =  new Call.Callback() {
         @Override
         public void onStateChanged(Call call, int newState) {
             super.onStateChanged(call, newState);

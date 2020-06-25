@@ -5,11 +5,14 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
@@ -23,7 +26,8 @@ public class ForegroundService extends Service {
     public static final String TAG = ForegroundService.class.getSimpleName();
     public static final String CHANNEL_ID = "ForegroundServiceChannel";
     private MediaRecorder recorder;
-    private boolean isRecordStarted;
+    private AudioManager am;
+    public static boolean isRecordStarted, isStartRecord;
     int count;
 
     @Override
@@ -34,6 +38,8 @@ public class ForegroundService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand: ");
+        am=(AudioManager)getSystemService(Context.AUDIO_SERVICE);
+
         String input = intent.getStringExtra("inputExtra");
 
         createNotificationChannel();
@@ -97,7 +103,11 @@ public class ForegroundService extends Service {
     }
 
     private boolean startMediaRecorder(final int audioSource){
+        Toast.makeText(this, "Record stared foreground service ", Toast.LENGTH_SHORT).show();
         recorder = new MediaRecorder();
+        if(am != null) {
+            am.setMode(AudioManager.MODE_IN_COMMUNICATION);
+        }
         try{
             File dirPath = new File(getExternalFilesDir(null).getAbsolutePath() + "/tempFiles");
 
@@ -113,19 +123,15 @@ public class ForegroundService extends Service {
             recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
             recorder.setOutputFile(fileName);
 
-            MediaRecorder.OnErrorListener errorListener = new MediaRecorder.OnErrorListener() {
-                public void onError(MediaRecorder arg0, int arg1, int arg2) {
-                    Log.e("TAG", "OnErrorListener " + arg1 + "," + arg2);
-                    // terminateAndEraseFile();
-                }
+            MediaRecorder.OnErrorListener errorListener = (arg0, arg1, arg2) -> {
+                Log.e("TAG", "OnErrorListener " + arg1 + "," + arg2);
+                // terminateAndEraseFile();
             };
             recorder.setOnErrorListener(errorListener);
 
-            MediaRecorder.OnInfoListener infoListener = new MediaRecorder.OnInfoListener() {
-                public void onInfo(MediaRecorder arg0, int arg1, int arg2) {
-                    Log.e(TAG, "OnInfoListener " + arg1 + "," + arg2);
-                    //terminateAndEraseFile();
-                }
+            MediaRecorder.OnInfoListener infoListener = (arg0, arg1, arg2) -> {
+                Log.e(TAG, "OnInfoListener " + arg1 + "," + arg2);
+                //terminateAndEraseFile();
             };
             recorder.setOnInfoListener(infoListener);
 
@@ -133,7 +139,7 @@ public class ForegroundService extends Service {
             // Sometimes prepare takes some time to complete
             //Thread.sleep(2000);
             recorder.start();
-            isRecordStarted = true;
+            //isRecordStarted = true;
             return true;
         }catch (Exception e){
             Log.d(TAG, "startMediaRecorder: "+ e.getMessage());
@@ -142,13 +148,16 @@ public class ForegroundService extends Service {
     }
 
     private void stopRecorder(){
-
-        if (isRecordStarted) {
-            recorder.stop();
+        Toast.makeText(this, "Record saved foreground service ", Toast.LENGTH_SHORT).show();
+        if(am != null) {
+            am.setMode(AudioManager.MODE_NORMAL);
+        }
+       // if (!isRecordStarted) {
+            //recorder.stop();
             recorder.release();
             recorder = null;
-            isRecordStarted = false;
-        }
+            //isRecordStarted = false;
+       // }
         stopForeground(true);
         stopSelf();
     }

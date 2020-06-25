@@ -1,4 +1,3 @@
-/*
 package com.naresh.hubpoc.receiver;
 
 import android.content.Context;
@@ -8,7 +7,6 @@ import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 
-import com.naresh.hubpoc.activity.MainActivity;
 import com.naresh.hubpoc.service.ForegroundService;
 
 import java.util.Date;
@@ -23,20 +21,17 @@ public class CallReceiver extends PhoneCallReceiver {
         Log.d(TAG, "onIncomingCallStarted: ");
     }
 
-*/
-/*
-    @Override
+    /*@Override
     protected void onIncomingCallReceived(Context ctx, String number, Date start)
     {
         //
-    }
-*//*
-
+    }*/
 
     @Override
     protected void onIncomingCallAnswered(Context ctx, String number, Date start)
     {
         super.onIncomingCallAnswered(ctx, number, start);
+        Toast.makeText(ctx, "onIncomingCallAnswered "+number, Toast.LENGTH_SHORT).show();
         startService(ctx);
         Log.d(TAG, "onIncomingCallAnswered: ");
     }
@@ -44,6 +39,8 @@ public class CallReceiver extends PhoneCallReceiver {
     @Override
     protected void onIncomingCallEnded(Context ctx, String number, Date start, Date end)
     {
+        Toast.makeText(ctx, "onIncomingCallEnded "+number, Toast.LENGTH_SHORT).show();
+
         Log.d(TAG, "onIncomingCallEnded: ");
     }
 
@@ -51,6 +48,8 @@ public class CallReceiver extends PhoneCallReceiver {
     protected void onOutgoingCallStarted(Context ctx, String number, Date start)
     {
         super.onOutgoingCallStarted(ctx, number, start);
+        Toast.makeText(ctx, "onOutgoingCallStarted "+number, Toast.LENGTH_SHORT).show();
+
         startService(ctx);
         Log.d(TAG, "onOutgoingCallStarted: ");
     } 
@@ -58,6 +57,7 @@ public class CallReceiver extends PhoneCallReceiver {
     @Override 
     protected void onOutgoingCallEnded(Context ctx, String number, Date start, Date end)
     {
+        Toast.makeText(ctx, "onOutgoingCallEnded "+number, Toast.LENGTH_SHORT).show();
         Log.d(TAG, "onOutgoingCallEnded: ");
     }
 
@@ -73,4 +73,4 @@ public class CallReceiver extends PhoneCallReceiver {
         ContextCompat.startForegroundService(context, serviceIntent);
     }
 
-}*/
+}

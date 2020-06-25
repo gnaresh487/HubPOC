@@ -1,7 +1,10 @@
 package com.naresh.hubpoc.activity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.app.role.RoleManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -34,6 +37,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -42,6 +46,7 @@ import com.naresh.hubpoc.CallLogsModel;
 import com.naresh.hubpoc.GlobalAccessibilityService;
 import com.naresh.hubpoc.R;
 import com.naresh.hubpoc.TelephonyInfo;
+import com.naresh.hubpoc.service.ForegroundService;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -54,11 +59,14 @@ import static android.Manifest.permission.READ_PHONE_STATE;
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 import static android.Manifest.permission.WRITE_SECURE_SETTINGS;
+import static android.telecom.TelecomManager.ACTION_CHANGE_DEFAULT_DIALER;
 import static android.telecom.TelecomManager.EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME;
+import static com.naresh.hubpoc.service.ForegroundService.isRecordStarted;
 
 public class MainActivity extends BaseActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final int DEFAULT_REQUEST_ID = 1;
     private static final String MY_PREFS_NAME = "pref_app";
     private static final String SIM_SLOT_ID = "sim_slot";
     RecyclerView callListRv;
@@ -93,7 +101,12 @@ public class MainActivity extends BaseActivity {
         callLogsAdapter = new CallLogsAdapter(this, phoneNumber -> {
             if (checkMakeCallPermission()) {
                 String dial = "tel:" + phoneNumber;
+                isRecordStarted = true;
                 startActivity(new Intent(Intent.ACTION_CALL, Uri.parse(dial)));
+                /*Log.d(TAG, "onAnswerClicked: record started");
+                Intent serviceIntent = new Intent(this, ForegroundService.class);
+                serviceIntent.putExtra("inputExtra", "Call Recording");
+                ContextCompat.startForegroundService(this, serviceIntent);*/
             } else {
                 requestMakeCallPermissions();
             }
@@ -179,6 +192,7 @@ public class MainActivity extends BaseActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.defaultApp:
+
                 offerReplacingDefaultDialer();
                 return true;
             default:
@@ -186,17 +200,52 @@ public class MainActivity extends BaseActivity {
         }
 }
 
+    @SuppressLint("WrongConstant")
+    public void requestRole() {
+        RoleManager roleManager = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+            roleManager = (RoleManager) getSystemService(ROLE_SERVICE);
+            Intent intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_DIALER);
+            startActivityForResult(intent, DEFAULT_REQUEST_ID);
+        }
+    }
+
     private void offerReplacingDefaultDialer() {
         TelecomManager telecomManager = (TelecomManager) getSystemService(TELECOM_SERVICE);
 
         /*if (!getPackageName().equals(telecomManager.getDefaultDialerPackage())) {
 
         }*/
-
+        boolean isAlreadyDefaultDialer = getPackageName().equals(telecomManager.getDefaultDialerPackage());
+      //  if (isAlreadyDefaultDialer) return;
+       /* Intent intent = new Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)*/
         Intent intent = new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS)
-                .putExtra(EXTRA_CHANGE_DEFAULT_DIALER_PACKAGE_NAME, getPackageName());
+                .putExtra(ACTION_CHANGE_DEFAULT_DIALER, getPackageName());
         startActivity(intent);
     }
+
+    private boolean isMyLauncherDefault() {
+        PackageManager localPackageManager = getPackageManager();
+        Intent intent = new Intent("android.intent.action.MAIN");
+        intent.addCategory("android.intent.category.HOME");
+        String str = localPackageManager.resolveActivity(intent,
+                PackageManager.MATCH_DEFAULT_ONLY).activityInfo.packageName;
+        return str.equals(getPackageName());
+    }
+
+    public void resetPreferredLauncherAndOpenChooser() {
+        PackageManager packageManager = getPackageManager();
+        ComponentName componentName = new ComponentName(this, com.naresh.hubpoc.defaultdialer.DialerActivity.class);
+        packageManager.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+
+        Intent selector = new Intent(Intent.ACTION_MAIN);
+        selector.addCategory(Intent.CATEGORY_HOME);
+        selector.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(selector);
+
+        packageManager.setComponentEnabledSetting(componentName, PackageManager.COMPONENT_ENABLED_STATE_DEFAULT, PackageManager.DONT_KILL_APP);
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (grantResults.length > 0) {
@@ -212,7 +261,7 @@ public class MainActivity extends BaseActivity {
                         finish();
                     }
                     break;
-/*
+                /*
                     if(grantResults[1] == PackageManager.PERMISSION_GRANTED){
                         getCallLogs(projection);
                     } else {
@@ -230,7 +279,7 @@ public class MainActivity extends BaseActivity {
                     } else {
                         requestStoragePermission();
                     }*/
-/*
+                 /*
                 case WRITE_ACCESSIBILITY_PERMISSION:
 
                     if (permissions[0].equals(WRITE_SECURE_SETTINGS) && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -276,6 +325,13 @@ public class MainActivity extends BaseActivity {
                     finish();
                 }
 
+                break;
+            case DEFAULT_REQUEST_ID:
+                if(resultCode == RESULT_OK){
+                    Toast.makeText(this, "HobPOC selected as Default app", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, " Choose HubPOC as Default dialer app", Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
     }
