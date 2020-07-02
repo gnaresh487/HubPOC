@@ -6,7 +6,7 @@ import android.media.MediaRecorder;
 
 public class SharedPrefUtils {
 
-    private static final String PREF_APP = "pref_app";
+    public static final String PREF_APP = "pref_app";
 
     private SharedPrefUtils() {
         throw new UnsupportedOperationException(

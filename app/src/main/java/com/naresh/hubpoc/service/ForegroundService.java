@@ -24,6 +24,12 @@ import com.naresh.hubpoc.activity.SettingsActivity;
 
 import java.io.File;
 
+import static com.naresh.hubpoc.SharedPrefUtils.PREF_APP;
+import static com.naresh.hubpoc.activity.MainActivity.AUDIO_ENCODER;
+import static com.naresh.hubpoc.activity.MainActivity.AUDIO_FORMAT;
+import static com.naresh.hubpoc.activity.MainActivity.AUDIO_SOURCE;
+import static com.naresh.hubpoc.activity.MainActivity.OUTPUT_FORMAT;
+
 public class ForegroundService extends Service {
     public static final String TAG = ForegroundService.class.getSimpleName();
     public static final String CHANNEL_ID = "ForegroundServiceChannel";
@@ -58,7 +64,7 @@ public class ForegroundService extends Service {
         startForeground(1, notification);
 
         Log.d(TAG, "onStartCommand: count "+ (++count));
-        startMediaRecorder(SharedPrefUtils.getIntData(this, SettingsActivity.AUDIO_SOURCE));
+        startMediaRecorder(SharedPrefUtils.getIntData(this, AUDIO_SOURCE));
         //startMediaRecorder(MediaRecorder.AudioSource.VOICE_COMMUNICATION);
 
         /*if(intent.getAction() != null && intent.getAction().equals("STOP_ACTION")) {
@@ -113,7 +119,7 @@ public class ForegroundService extends Service {
             Toast.makeText(this, "speaker on", Toast.LENGTH_SHORT).show();
            // am.setStreamVolume(AudioManager.STREAM_VOICE_CALL, am.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL), 0);
 //            Toast.makeText(this, am.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL), Toast.LENGTH_SHORT).show();
-           // am.setMode(AudioManager.MODE_IN_COMMUNICATION);
+            am.setMode(AudioManager.MODE_IN_COMMUNICATION);
   //          Toast.makeText(this, am.getStreamVolume(AudioManager.STREAM_VOICE_CALL), Toast.LENGTH_SHORT).show();
         }
         try{
@@ -123,12 +129,13 @@ public class ForegroundService extends Service {
             if (!dirPath.exists()) {
                 dirPath.mkdirs();
             }
-            String fileName = dirPath.getAbsolutePath() + File.separator + System.currentTimeMillis()+".amr";
+            String fileName = dirPath.getAbsolutePath() + File.separator + System.currentTimeMillis()+
+                    SharedPrefUtils.getStringData(this, AUDIO_FORMAT);
 
             recorder.reset();
             recorder.setAudioSource(audioSource);
-            recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+            recorder.setOutputFormat(SharedPrefUtils.getIntData(this, OUTPUT_FORMAT));
+            recorder.setAudioEncoder(SharedPrefUtils.getIntData(this, AUDIO_ENCODER));
             recorder.setOutputFile(fileName);
 
             MediaRecorder.OnErrorListener errorListener = (arg0, arg1, arg2) -> {
@@ -168,6 +175,19 @@ public class ForegroundService extends Service {
        // }
         stopForeground(true);
         stopSelf();
+    }
+
+    private void saveCallRecordingDefaultData(){
+        if(SharedPrefUtils.getStringData(this, AUDIO_FORMAT) == null) {
+            getSharedPreferences(PREF_APP, Context.MODE_PRIVATE).edit().putInt(AUDIO_SOURCE, MediaRecorder.AudioSource.VOICE_COMMUNICATION)
+            .putInt(OUTPUT_FORMAT, MediaRecorder.OutputFormat.THREE_GPP)
+            .putInt(AUDIO_ENCODER, MediaRecorder.AudioEncoder.AMR_NB)
+            .putString(AUDIO_FORMAT, ".amr").apply();
+            /*SharedPrefUtils.saveData(this, AUDIO_FORMAT, ".amr");
+            SharedPrefUtils.saveData(this, AUDIO_SOURCE, MediaRecorder.AudioSource.VOICE_COMMUNICATION);
+            SharedPrefUtils.saveData(this, OUTPUT_FORMAT, MediaRecorder.OutputFormat.THREE_GPP);
+            SharedPrefUtils.saveData(this, AUDIO_ENCODER, MediaRecorder.AudioEncoder.AMR_NB);*/
+        }
     }
 
     public static int getAudioSource(String str) {
