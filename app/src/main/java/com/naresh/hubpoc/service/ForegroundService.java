@@ -18,7 +18,9 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import com.naresh.hubpoc.R;
+import com.naresh.hubpoc.SharedPrefUtils;
 import com.naresh.hubpoc.activity.MainActivity;
+import com.naresh.hubpoc.activity.SettingsActivity;
 
 import java.io.File;
 
@@ -56,7 +58,8 @@ public class ForegroundService extends Service {
         startForeground(1, notification);
 
         Log.d(TAG, "onStartCommand: count "+ (++count));
-        startMediaRecorder(MediaRecorder.AudioSource.VOICE_COMMUNICATION);
+        startMediaRecorder(SharedPrefUtils.getIntData(this, SettingsActivity.AUDIO_SOURCE));
+        //startMediaRecorder(MediaRecorder.AudioSource.VOICE_COMMUNICATION);
 
         /*if(intent.getAction() != null && intent.getAction().equals("STOP_ACTION")) {
             stopRecorder();
@@ -106,7 +109,12 @@ public class ForegroundService extends Service {
         Toast.makeText(this, "Record stared foreground service ", Toast.LENGTH_SHORT).show();
         recorder = new MediaRecorder();
         if(am != null) {
-            am.setMode(AudioManager.MODE_IN_COMMUNICATION);
+            am.setSpeakerphoneOn(true);
+            Toast.makeText(this, "speaker on", Toast.LENGTH_SHORT).show();
+           // am.setStreamVolume(AudioManager.STREAM_VOICE_CALL, am.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL), 0);
+//            Toast.makeText(this, am.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL), Toast.LENGTH_SHORT).show();
+           // am.setMode(AudioManager.MODE_IN_COMMUNICATION);
+  //          Toast.makeText(this, am.getStreamVolume(AudioManager.STREAM_VOICE_CALL), Toast.LENGTH_SHORT).show();
         }
         try{
             File dirPath = new File(getExternalFilesDir(null).getAbsolutePath() + "/tempFiles");

@@ -2,6 +2,7 @@ package com.naresh.hubpoc;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.MediaRecorder;
 
 public class SharedPrefUtils {
 
@@ -18,7 +19,8 @@ public class SharedPrefUtils {
     }
 
     static public int getIntData(Context context, String key) {
-        return context.getSharedPreferences(PREF_APP, Context.MODE_PRIVATE).getInt(key, 0);
+        // default audio source is MediaRecorder.AudioSource.VOICE_COMMUNICATION = 7
+        return context.getSharedPreferences(PREF_APP, Context.MODE_PRIVATE).getInt(key, 7);
     }
 
     static public String getStringData(Context context, String key) {

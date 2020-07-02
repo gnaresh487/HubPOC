@@ -116,12 +116,12 @@ public class MainActivity extends BaseActivity {
 
         SharedPreferences prefs = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
         simIccID = prefs.getString(SIM_SLOT_ID, "");
-        Log.d(TAG, "onCreate: prefs "+simIccID);
-        if(!checkRecordCallPermission() || !checkStoragePermission() ||
+        Log.d(TAG, "onCreate: prefs " + simIccID);
+        if (!checkRecordCallPermission() || !checkStoragePermission() ||
                 !checkReadPhoneStatePermission() || !checkCallLogsPermission()) {
             requestAllPermissions();
         } else {
-            if(!simIccID.equals("")){
+            if (!simIccID.equals("")) {
                 getCallLogs(projection);
             } else {
                 getSimSlotNumber();
@@ -161,12 +161,12 @@ public class MainActivity extends BaseActivity {
 
         //Enable Accessibility Service
 
-        if(!(isAccessibilitySettingsOn())){
-            Toast.makeText(this, "Enable Accessibility Service for "+getString(R.string.app_name), Toast.LENGTH_LONG).show();
+        if (!(isAccessibilitySettingsOn())) {
+            Toast.makeText(this, "Enable Accessibility Service for " + getString(R.string.app_name), Toast.LENGTH_LONG).show();
             /*Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
             startActivityForResult(intent, ACCESSIBILITY_PERMISSION);*/
             Intent goToSettings = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
-           // goToSettings.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
+            // goToSettings.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
             startActivityForResult(goToSettings, ACCESSIBILITY_PERMISSION);
         } else {
             Log.d(TAG, "onCreate: isAccessibilitySettingsOn 2 ");
@@ -192,13 +192,15 @@ public class MainActivity extends BaseActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.defaultApp:
-
                 offerReplacingDefaultDialer();
+                return true;
+            case R.id.settings:
+                startActivity(new Intent(this, SettingsActivity.class));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
-}
+    }
 
     @SuppressLint("WrongConstant")
     public void requestRole() {
@@ -217,8 +219,8 @@ public class MainActivity extends BaseActivity {
 
         }*/
         boolean isAlreadyDefaultDialer = getPackageName().equals(telecomManager.getDefaultDialerPackage());
-      //  if (isAlreadyDefaultDialer) return;
-       /* Intent intent = new Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)*/
+        //  if (isAlreadyDefaultDialer) return;
+        /* Intent intent = new Intent(TelecomManager.ACTION_CHANGE_DEFAULT_DIALER)*/
         Intent intent = new Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS)
                 .putExtra(ACTION_CHANGE_DEFAULT_DIALER, getPackageName());
         startActivity(intent);
@@ -319,15 +321,15 @@ public class MainActivity extends BaseActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        switch (requestCode){
+        switch (requestCode) {
             case ACCESSIBILITY_PERMISSION:
-                if(!(isAccessibilitySettingsOn())){
+                /*if(!(isAccessibilitySettingsOn())){
                     finish();
-                }
+                }*/
 
                 break;
             case DEFAULT_REQUEST_ID:
-                if(resultCode == RESULT_OK){
+                if (resultCode == RESULT_OK) {
                     Toast.makeText(this, "HobPOC selected as Default app", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(this, " Choose HubPOC as Default dialer app", Toast.LENGTH_SHORT).show();
@@ -361,8 +363,8 @@ public class MainActivity extends BaseActivity {
 
             do {
                 String simSubId = c.getString(c.getColumnIndexOrThrow(CallLog.Calls.PHONE_ACCOUNT_ID));
-                Log.d(TAG, "getCallLogs: simSubId "+simSubId +" simIccID "+simIccID);
-                if(simSubId != null && simSubId.contains(simIccID)) {
+                Log.d(TAG, "getCallLogs: simSubId " + simSubId + " simIccID " + simIccID);
+                if (simSubId != null && simSubId.contains(simIccID)) {
                     String callerID = c.getString(c.getColumnIndex(CallLog.Calls._ID));
                     String callerNumber = c.getString(c.getColumnIndex(CallLog.Calls.NUMBER));
                     String userNumber = c.getString(c.getColumnIndex(CallLog.Calls.CACHED_FORMATTED_NUMBER));
@@ -458,17 +460,17 @@ public class MainActivity extends BaseActivity {
     }
 
     private void getSimSlotNumber() {
-        Log.d("getSimSlotNumber","getSimSlotNumber");
+        Log.d("getSimSlotNumber", "getSimSlotNumber");
         SubscriptionManager localSubscriptionManager = SubscriptionManager.from(this);
         if (Build.VERSION.SDK_INT > 22) {
-            Log.d("getSimSlotNumber","getSimSlotNumber1");
+            Log.d("getSimSlotNumber", "getSimSlotNumber1");
             //for dual sim mobile
 
             if (ActivityCompat.checkSelfPermission(this, READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
             if (localSubscriptionManager.getActiveSubscriptionInfoCount() > 1) {
-                Log.d("getSimSlotNumber","getSimSlotNumber2");
+                Log.d("getSimSlotNumber", "getSimSlotNumber2");
                 //if there are two sims in dual sim mobile
                 List localList = localSubscriptionManager.getActiveSubscriptionInfoList();
                 SubscriptionInfo simInfo1 = (SubscriptionInfo) localList.get(0);
@@ -489,10 +491,10 @@ public class MainActivity extends BaseActivity {
                     Log.d(TAG, "getSimSlotNumber: "+String.valueOf(simInfo1.getMncString()));
                 }*/
 
-                Log.d(TAG, "getSimSlotNumber: iccid1 "+String.valueOf(simInfo1.getIccId()));
-                Log.d(TAG, "getSimSlotNumber: iccid2 "+String.valueOf(simInfo2.getIccId()));
-                Log.d(TAG, "getSimSlotNumber: Simslot1 "+String.valueOf(simInfo1.getSimSlotIndex()));
-                Log.d(TAG, "getSimSlotNumber: Simslot2 "+String.valueOf(simInfo2.getSimSlotIndex()));
+                Log.d(TAG, "getSimSlotNumber: iccid1 " + String.valueOf(simInfo1.getIccId()));
+                Log.d(TAG, "getSimSlotNumber: iccid2 " + String.valueOf(simInfo2.getIccId()));
+                Log.d(TAG, "getSimSlotNumber: Simslot1 " + String.valueOf(simInfo1.getSimSlotIndex()));
+                Log.d(TAG, "getSimSlotNumber: Simslot2 " + String.valueOf(simInfo2.getSimSlotIndex()));
 
             } else {
                 //if there is 1 sim in dual sim mobile
@@ -500,14 +502,14 @@ public class MainActivity extends BaseActivity {
                         .getSystemService(Context.TELEPHONY_SERVICE);
 
                 sim1PhoneNumber = tManager.getNetworkOperatorName();
-                if(localSubscriptionManager.getActiveSubscriptionInfoCount()>0){
-                    Log.d("getSimSlotNumber","getSimSlotNumber3:"+localSubscriptionManager.getActiveSubscriptionInfoCount());
+                if (localSubscriptionManager.getActiveSubscriptionInfoCount() > 0) {
+                    Log.d("getSimSlotNumber", "getSimSlotNumber3:" + localSubscriptionManager.getActiveSubscriptionInfoCount());
                     List localList = localSubscriptionManager.getActiveSubscriptionInfoList();
                     SubscriptionInfo simInfo1 = (SubscriptionInfo) localList.get(0);
                     sim1PhoneNumber = String.valueOf(simInfo1.getNumber());
                     simIccID = simInfo1.getIccId();
-                    Log.d(TAG, "getSimSlotNumber: iccid1 "+simInfo1.getIccId()+","+simInfo1.getNumber()+"....");
-                    Log.d(TAG, "getSimSlotNumber: Simslot1 "+String.valueOf(simInfo1.getSimSlotIndex()));
+                    Log.d(TAG, "getSimSlotNumber: iccid1 " + simInfo1.getIccId() + "," + simInfo1.getNumber() + "....");
+                    Log.d(TAG, "getSimSlotNumber: Simslot1 " + String.valueOf(simInfo1.getSimSlotIndex()));
 
                     SharedPreferences.Editor editor = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE).edit();
                     editor.putString(SIM_SLOT_ID, simIccID);
@@ -517,27 +519,27 @@ public class MainActivity extends BaseActivity {
                 }
             }
 
-        }else{
-            Log.d("getSimSlotNumber","getSimSlotNumber4");
+        } else {
+            Log.d("getSimSlotNumber", "getSimSlotNumber4");
             //below android version 22
             TelephonyManager tManager = (TelephonyManager) getBaseContext()
                     .getSystemService(Context.TELEPHONY_SERVICE);
 
             sim1PhoneNumber = tManager.getNetworkOperatorName();
-            if(localSubscriptionManager.getActiveSubscriptionInfoCount()>0){
-                Log.d("getSimSlotNumber","getSimSlotNumber3:"+localSubscriptionManager.getActiveSubscriptionInfoCount());
+            if (localSubscriptionManager.getActiveSubscriptionInfoCount() > 0) {
+                Log.d("getSimSlotNumber", "getSimSlotNumber3:" + localSubscriptionManager.getActiveSubscriptionInfoCount());
                 List localList = localSubscriptionManager.getActiveSubscriptionInfoList();
                 SubscriptionInfo simInfo1 = (SubscriptionInfo) localList.get(0);
                 sim1PhoneNumber = String.valueOf(simInfo1.getNumber());
                 simIccID = simInfo1.getIccId();
-                Log.d(TAG, "getSimSlotNumber: iccid1 "+simInfo1.getIccId()+","+simInfo1.getNumber()+"....");
-                Log.d(TAG, "getSimSlotNumber: Simslot1 "+String.valueOf(simInfo1.getSimSlotIndex()));
+                Log.d(TAG, "getSimSlotNumber: iccid1 " + simInfo1.getIccId() + "," + simInfo1.getNumber() + "....");
+                Log.d(TAG, "getSimSlotNumber: Simslot1 " + String.valueOf(simInfo1.getSimSlotIndex()));
             }
         }
 
     }
 
-    private void check(){
+    private void check() {
         TelephonyInfo telephonyInfo = TelephonyInfo.getInstance(this);
 
         String imeiSIM1 = telephonyInfo.getImsiSIM1();
@@ -584,7 +586,7 @@ public class MainActivity extends BaseActivity {
             Log.d(TAG, "makeDialogForMultipleNumbers: sim1Layout");
             simIccID = simInfo1.getIccId();
 
-            Log.d(TAG, "onCreate: pref 1 "+simIccID);
+            Log.d(TAG, "onCreate: pref 1 " + simIccID);
             editor.putString(SIM_SLOT_ID, simIccID);
             editor.apply();
 
@@ -596,7 +598,7 @@ public class MainActivity extends BaseActivity {
             Log.d(TAG, "makeDialogForMultipleNumbers: sim2Layout");
             simIccID = simInfo2.getIccId();
 
-            Log.d(TAG, "onCreate: pref 1 "+simIccID);
+            Log.d(TAG, "onCreate: pref 1 " + simIccID);
             editor.putString(SIM_SLOT_ID, simIccID);
             editor.apply();
             getCallLogs(projection);

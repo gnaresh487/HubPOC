@@ -12,8 +12,9 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.STORAGE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
-
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <uses-permission android:name="android.permission.CAPTURE_AUDIO_OUTPUT"
+        tools:ignore="ProtectedPermissions" />
     <uses-permission
         android:name="android.permission.WRITE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
@@ -28,7 +29,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
+        <activity android:name=".activity.SettingsActivity"></activity>
         <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,12 +37,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".defaultdialer.DialerActivity"
             android:windowSoftInputMode="stateAlwaysVisible|adjustResize">
-
             <intent-filter>
+
                 <!-- Handle links from other applications -->
                 <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.DIAL" />
@@ -50,10 +50,12 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <!-- Handle links in browsers -->
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data android:scheme="tel" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.DIAL" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
@@ -64,6 +66,7 @@
             <meta-data
                 android:name="android.telecom.IN_CALL_SERVICE_UI"
                 android:value="true" />
+
             <intent-filter>
                 <action android:name="android.telecom.InCallService" />
             </intent-filter>
@@ -71,20 +74,18 @@
 
         <activity android:name=".defaultdialer.CallActivity" />
 
-            <receiver android:name=".receiver.CallReceiver" >
-           <intent-filter>
-               <action android:name="android.intent.action.PHONE_STATE" />
-           </intent-filter>
-           <intent-filter>
-               <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
-           </intent-filter>
-       </receiver>
+        <receiver android:name=".receiver.CallReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.PHONE_STATE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
+            </intent-filter>
+        </receiver>
 
-        <service android:name=".service.ForegroundService" />
-
-        <!--android:exported="true"-->
+        <service android:name=".service.ForegroundService" /> <!-- android:exported="true" -->
         <service
-            android:name="com.naresh.hubpoc.GlobalAccessibilityService"
+            android:name=".GlobalAccessibilityService"
             android:enabled="true"
             android:label="@string/app_name"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
@@ -96,30 +97,6 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/serviceconfig" />
         </service>
-
-        <!--
-                android:directBootAware="true"
-        -->
-
-        <!--
-                <receiver
-                    android:name=".DeviceAdminDemo"
-                    android:permission="android.permission.BIND_DEVICE_ADMIN" >
-                    <meta-data
-                        android:name="android.app.device_admin"
-                        android:resource="@xml/my_admin" />
-
-
-                    <intent-filter>
-                        <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
-                        <action android:name="android.app.action.DEVICE_ADMIN_DISABLED" />
-                        <action android:name="android.app.action.DEVICE_ADMIN_DISABLE_REQUESTED" />
-                    </intent-filter>
-                </receiver>
-
-                <service android:name=".TService" >
-                </service>-->
-
     </application>
 
 </manifest>

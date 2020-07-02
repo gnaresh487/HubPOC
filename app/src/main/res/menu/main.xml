@@ -3,4 +3,7 @@
     <item android:id="@+id/defaultApp"
         android:title="Change Default Dialer App"
         />
+    <item android:id="@+id/settings"
+        android:title="settings"
+        />
 </menu>
