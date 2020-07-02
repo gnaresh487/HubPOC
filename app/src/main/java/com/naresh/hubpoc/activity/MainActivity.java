@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -45,6 +46,7 @@ import com.naresh.hubpoc.CallLogsAdapter;
 import com.naresh.hubpoc.CallLogsModel;
 import com.naresh.hubpoc.GlobalAccessibilityService;
 import com.naresh.hubpoc.R;
+import com.naresh.hubpoc.SharedPrefUtils;
 import com.naresh.hubpoc.TelephonyInfo;
 import com.naresh.hubpoc.service.ForegroundService;
 
@@ -76,6 +78,11 @@ public class MainActivity extends BaseActivity {
     String sim1IccID = "", sim2IccID = "";
     String simIccID = "";
     String[] projection;
+
+    public static final String AUDIO_SOURCE = "audio_source";
+    public static final String AUDIO_FORMAT = "audio_format";
+    public static final String AUDIO_ENCODER = "audio_encoder";
+    public static final String OUTPUT_FORMAT = "output_format";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,6 +138,7 @@ public class MainActivity extends BaseActivity {
             }
         }
 
+        saveCallRecordingDefaultData();
         /*if(checkRecordCallPermission()){
 
         } else {
@@ -161,24 +169,24 @@ public class MainActivity extends BaseActivity {
 
         //Enable Accessibility Service
 
-        if (!(isAccessibilitySettingsOn())) {
+        /*if (!(isAccessibilitySettingsOn())) {
             Toast.makeText(this, "Enable Accessibility Service for " + getString(R.string.app_name), Toast.LENGTH_LONG).show();
-            /*Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
-            startActivityForResult(intent, ACCESSIBILITY_PERMISSION);*/
+            *//*Intent intent = new Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS);
+            startActivityForResult(intent, ACCESSIBILITY_PERMISSION);*//*
             Intent goToSettings = new Intent(android.provider.Settings.ACTION_ACCESSIBILITY_SETTINGS);
             // goToSettings.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
             startActivityForResult(goToSettings, ACCESSIBILITY_PERMISSION);
         } else {
             Log.d(TAG, "onCreate: isAccessibilitySettingsOn 2 ");
-            /*Intent i = new Intent(this, GlobalAccessibilityService.class);
+            *//*Intent i = new Intent(this, GlobalAccessibilityService.class);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(i);
             } else {
                 startService(i);
-            }*/
+            }*//*
             Log.d(TAG, "onCreate: isAccessibilitySettingsOn 3 ");
         }
-
+*/
     }
 
     @Override
@@ -641,6 +649,15 @@ public class MainActivity extends BaseActivity {
         }
 
         return false;
+    }
+
+    private void saveCallRecordingDefaultData(){
+        if(SharedPrefUtils.getStringData(this, AUDIO_FORMAT) == null) {
+            SharedPrefUtils.saveData(this, AUDIO_FORMAT, ".amr");
+            SharedPrefUtils.saveData(this, AUDIO_SOURCE, MediaRecorder.AudioSource.VOICE_COMMUNICATION);
+            SharedPrefUtils.saveData(this, OUTPUT_FORMAT, MediaRecorder.OutputFormat.THREE_GPP);
+            SharedPrefUtils.saveData(this, AUDIO_ENCODER, MediaRecorder.AudioEncoder.AMR_NB);
+        }
     }
 
 }
